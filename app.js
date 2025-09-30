@@ -338,7 +338,7 @@
     righe.push("Buongiorno,");
     if (cliente.value) righe.push(`👤 **Cliente:** ${cliente.value}`);
     righe.push("\n👨‍🔧 **Invio il preventivo per l’intervento richiesto presso:**");
-    righe.push(`📍 ${indirizzo.value || "[indirizzo]"} – ${localitaSel.value}`);
+    righe.push(`📍 ${indirizzo.value} – ${localitaSel.value}`);
     if (tipoIntervento.value){ 
       const info = tipoInterventoMap.get(tipoIntervento.value)||{};
       const cod = info.codice ? ` (Cod. ${info.codice})` : "";
