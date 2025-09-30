@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PRO-PIPE • Generatore Preventivi (Offline v6.6)</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header class="header no-print">
+        <div class="brand">
+          <img src="./logo.png" alt="PRO-PIPE" class="logo-img"/>
+          <div>
+            <div class="title">PRO-PIPE</div>
+            <div class="subtitle">Preventivi, Tariffe, Urgenze, Casi &amp; Distanze (offline)</div>
+          </div>
+        </div>
+        <nav class="tabs">
+          <a href="#preventivo" id="tab-preventivo" class="tab active">🧾 Preventivo</a>
+          <a href="#tariffe" id="tab-tariffe" class="tab">💶 Tariffe</a>
+          <a href="#urgenze" id="tab-urgenze" class="tab">🚨 Urgenze</a>
+          <a href="#casi" id="tab-casi" class="tab">🗂️ Casi</a>
+          <a href="#distanze" id="tab-distanze" class="tab">🗺️ Distanze</a>
+        </nav>
+      </header>
+
+      <!-- PREVENTIVO PAGE -->
+      <section id="page-preventivo" class="page">
+        <div class="actions no-print">
+          <div class="row">
+            <button id="waBtn" title="Apri WhatsApp Web con il testo">💬 WhatsApp</button>
+            <button id="pdfBtn" title="Esporta PDF (stampa)">🖨️ PDF</button>
+            <button id="copyBtn" title="Copia messaggio cliente">📋 Copia testo</button>
+            <button id="resetBtn" class="outline" title="Pulisci campi">🧹 Pulisci</button>
+          </div>
+          <div class="row">
+            <label class="switch"><input id="lockTariffe" type="checkbox"/><span class="slider"></span></label>
+            <span class="pin-label">Blocca tariffe</span>
+            <div class="urgenza">
+              <label for="presetUrgenza">Preset Urgenza</label>
+              <select id="presetUrgenza"></select>
+            </div>
+            <div class="rounding">
+              <label for="roundMode">Arrotondamento</label>
+              <select id="roundMode">
+                <option value="nearest" selected>Matematico (più vicino)</option>
+                <option value="up">Sempre per eccesso</option>
+                <option value="down">Sempre per difetto</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <section class="grid">
+          <div class="card">
+            <h2>🪄 Dati intervento</h2>
+            <label>Nome cliente<input id="cliente" placeholder="Nome e cognome / Azienda" /></label>
+            <label>Località<select id="localita"></select></label>
+            <label>Indirizzo<input id="indirizzo" placeholder="Via, numero civico" /></label>
+
+            <label>Tipologia intervento
+              <div class="inline">
+                <select id="tipoIntervento"></select>
+                <span id="tariffaCaseHint" class="hint"></span>
+              </div>
+              <small>Modifica le voci nella pagina <strong>Casi</strong></small>
+            </label>
+
+            <div class="two">
+              <label>Km stimati A/R<input id="kmAR" type="number" min="0" value="0"/></label>
+              <label>Minuti trasferimento A/R<input id="minutiTrasf" type="number" min="0" value="0"/><small><input id="round5" type="checkbox" checked/> Arrotonda ×5</small></label>
+            </div>
+            <div class="two">
+              <label>Ore di lavoro<input id="oreLavoro" type="number" min="0" step="0.25" value="1"/></label>
+              <label>Tariffa intervento €/h (IVA incl.)<input id="tariffaInterventoIvaInc" type="number" min="0" step="1" value="130"/></label>
+            </div>
+
+            <div class="three">
+              <label class="checkbox"><span>Videoispezione in combinata</span><input id="videoComb" type="checkbox"/></label>
+              <label class="checkbox"><span>Videoispezione finale</span><input id="videoFinale" type="checkbox"/></label>
+              <label>Localizzazioni (n.)<input id="qtaLoc" type="number" min="0" step="1" value="0"/></label>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>⚙️ Impostazioni prezzo (IVA inclusa)</h2>
+            <div class="two">
+              <label>Trasferimento cliente (€/min, IVA incl.)<input id="trasfClienteIvaInc" type="number" min="0" step="0.1" value="1"/></label>
+              <label>Trasferimento interno (€/min, IVA incl.)<input id="trasfInternoIvaInc" type="number" min="0" step="0.1" value="2"/></label>
+            </div>
+            <div class="three">
+              <label>Video combinata (€/h, IVA incl.)<input id="videoCombIvaInc" type="number" min="0" step="1" value="60"/></label>
+              <label>Video finale (€ fisso, IVA incl.)<input id="videoFinaleIvaInc" type="number" min="0" step="1" value="30"/></label>
+              <label>Localizzazione (€ cad, IVA incl.)<input id="locCadIvaInc" type="number" min="0" step="1" value="30"/></label>
+            </div>
+
+            <div class="card light">
+              <h3>➕ Elementi aggiuntivi</h3>
+              <div class="inline">
+                <select id="servizioSel"></select>
+                <input id="servizioQta" type="number" min="1" step="1" value="1" style="max-width:120px"/>
+                <button id="addServizio">Aggiungi</button>
+              </div>
+              <div id="serviziHint" class="hint"></div>
+              <div class="table-wrap">
+                <table id="tabServizi">
+                  <thead><tr><th>Codice</th><th>Elemento</th><th>Prezzo IVA incl.</th><th>Q.tà</th><th>Totale</th><th class="no-print">Azioni</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="summary">
+              <div><div>Imponibile</div><strong id="imponibile">€ 0,00</strong></div>
+              <div><div>IVA 22%</div><strong id="iva">€ 0,00</strong></div>
+              <div><div>Totale IVA incl.</div><strong id="totale">€ 0,00</strong></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card print-block">
+          <h2>Anteprima messaggio WhatsApp (cliente)</h2>
+          <textarea id="msgCliente" readonly></textarea>
+        </section>
+
+        <section class="card print-block">
+          <h2>Riepilogo tecnico (uso interno)</h2>
+          <textarea id="riepilogoTecnico" readonly></textarea>
+        </section>
+      </section>
+
+      <!-- TARIFFE PAGE -->
+      <section id="page-tariffe" class="page hidden">
+        <div class="card">
+          <h2>💶 Tariffe standard (foglio: Tariffe)</h2>
+          <div class="toolbar">
+            <input id="searchTariffe" placeholder="Cerca… (Voce, Codice, Note)" />
+            <label class="file-btn">📥 Importa CSV <input id="importTariffe" type="file" accept=".csv" hidden /></label>
+            <button id="addTariffa">➕ Aggiungi riga</button>
+            <button id="exportTariffe">📤 Esporta CSV</button>
+          </div>
+          <div class="table-wrap">
+            <table id="tabTariffe">
+              <thead><tr>
+                <th>Codice</th><th>Voce</th><th>Unità</th><th>Prezzo (IVA incl.)</th><th>Note</th><th class="no-print">Mappa su</th><th class="no-print">Azioni</th>
+              </tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- URGENZE PAGE -->
+      <section id="page-urgenze" class="page hidden">
+        <div class="card">
+          <h2>🚨 Urgenze</h2>
+          <div class="toolbar">
+            <input id="searchUrgenze" placeholder="Cerca… (Caso, Descrizione)" />
+            <label class="file-btn">📥 Importa CSV <input id="importUrgenze" type="file" accept=".csv" hidden /></label>
+            <button id="addUrgenza">➕ Aggiungi riga</button>
+            <button id="exportUrgenze">📤 Esporta CSV</button>
+          </div>
+          <div class="table-wrap">
+            <table id="tabUrgenze">
+              <thead><tr>
+                <th>Caso</th><th>Descrizione</th><th>Sovrapprezzo (IVA incl.)</th><th>Priorità</th><th class="no-print">Azioni</th>
+              </tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <details class="help"><summary>CSV supportato</summary>
+            <p>Intestazioni: <code>Caso,Descrizione,SovrapprezzoIVA,Priorita</code></p>
+          </details>
+        </div>
+      </section>
+
+      <!-- CASI PAGE -->
+      <section id="page-casi" class="page hidden">
+        <div class="card">
+          <h2>🗂️ Casi / Tipologie intervento</h2>
+          <div class="toolbar">
+            <input id="searchCasi" placeholder="Cerca… (Codice, Tipo, Descrizione)" />
+            <label class="file-btn">📥 Importa CSV <input id="importCasi" type="file" accept=".csv" hidden /></label>
+            <button id="addCaso">➕ Aggiungi riga</button>
+            <button id="exportCasi">📤 Esporta CSV</button>
+          </div>
+          <div class="table-wrap">
+            <table id="tabCasi">
+              <thead><tr>
+                <th>Codice</th><th>Tipo</th><th>Descrizione</th><th>Tariffa (IVA incl.)</th><th>Note</th><th class="no-print">Azioni</th>
+              </tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <details class="help"><summary>CSV supportato</summary>
+            <p>Intestazioni: <code>Codice,Tipo,Descrizione,TariffaIVA,Note</code>.</p>
+          </details>
+        </div>
+      </section>
+
+      <!-- DISTANZE PAGE -->
+      <section id="page-distanze" class="page hidden">
+        <div class="card">
+          <h2>🗺️ Distanze di percorrenza (km)</h2>
+          <div class="toolbar">
+            <input id="searchDistanze" placeholder="Cerca località..." />
+            <label class="file-btn">📥 Importa CSV <input id="importDistanze" type="file" accept=".csv" hidden /></label>
+            <button id="addDistanza">➕ Aggiungi località</button>
+            <button id="exportDistanze">📤 Esporta CSV</button>
+          </div>
+          <div class="table-wrap">
+            <table id="tabDistanze">
+              <thead>
+                <tr>
+                  <th>Località</th>
+                  <th>Distanza (km A/R)</th>
+                  <th>Tempo (min A/R)</th>
+                  <th class="no-print">Azioni</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <details class="help"><summary>CSV supportato</summary>
+            <p>Intestazioni: <code>Localita;KmAR;TempoMinAR</code>. Sono accettati anche CSV a 2 colonne (senza tempo): in quel caso il tempo viene importato come 0.</p>
+          </details>
+        </div>
+      </section>
+
+      <footer class="footer no-print">v6.6 • Distanze con Tempo • Import/Export 3 col • Arrotondamento • Elementi aggiuntivi • Logo ufficiale</footer>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
